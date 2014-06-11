@@ -1,0 +1,8 @@
+-H "Host: www.fmlist.org"
+-H "Connection: keep-alive"
+-H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+-H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36"
+-H "Referer: http://www.fmlist.org/ul_ukwliste_menu.php?lastClicked=frequency&selected=3"
+-H "Accept-Encoding: gzip,deflate,sdch"
+-H "Accept-Language: en-US,en;q=0.8"
+-H "Cookie: FMLIST=a87906465d56d11e9716325af7284e1f"
