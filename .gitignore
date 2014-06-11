@@ -1,4 +1,4 @@
-*.py
+*.pyc
 *.swp
 *.html
 raw_data
