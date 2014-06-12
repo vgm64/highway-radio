@@ -42,10 +42,10 @@ def parse_html_to_lists(filename):
     all_results.append(results)
   return all_results
 
-def get_database_conn():
-  connection = MySQLdb.connect('localhost', 'root', '', 'insight')
-  cursor = connection.cursor()
-  return connection, cursor
+#def get_database_conn():
+  #connection = MySQLdb.connect('localhost', 'root', '', 'insight')
+  #cursor = connection.cursor()
+  #return connection, cursor
 
 def insert_into_msqyl(data, reset=True):
   connection = MySQLdb.connect('localhost', 'root', '', 'insight')
@@ -77,10 +77,11 @@ def insert_into_msqyl(data, reset=True):
         remarks CHAR(50), \
         powertrp CHAR(50), \
         cat CHAR(100), \
+        scs CHAR(50), \
         lat FLOAT, \
         lon FLOAT)")
-    base_query = """INSERT INTO fmlist (frequency, p, location,  reg, la, program, regprogram, pty, modmod, power, dir, pol, height, coord, ant, haat, rds_id, rds_reg, pi_id, pi_reg, remarks, powertrp, cat, lat, lon) VALUES 
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
+    base_query = """INSERT INTO fmlist (frequency, p, location,  reg, la, program, regprogram, pty, modmod, power, dir, pol, height, coord, ant, haat, rds_id, rds_reg, pi_id, pi_reg, remarks, powertrp, cat, scs, lat, lon) VALUES 
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
     #print "Entering execute for loop"
     #for datum in data:
       #print datum
@@ -122,7 +123,7 @@ def clean(data):
     remark = category_swap(remark, 'High S', 'High School Radio')
     remark = category_swap(remark, 'Hip Ho', 'Hip Hop')
     remark = category_swap(remark, 'News', 'News')
-    remark = category_swap(remark, 'NPR', 'News')
+    remark = category_swap(remark, 'NPR', 'Public Radio')
     remark = category_swap(remark, 'Region', 'Regional Mexican')
     remark = category_swap(remark, 'Relig', 'Religious')
     remark = category_swap(remark, 'Rhyth', 'Top Hits')
@@ -134,6 +135,16 @@ def clean(data):
     remark = category_swap(remark, 'Top', 'Top Hits')
     remark = category_swap(remark, 'AC', 'Adult Contemporary')
     remark = category_swap(remark, 'AAA', '')
+    remark = category_swap(remark, 'jazz', 'Jazz')
+    remark = category_swap(remark, 'Indie', 'Indie')
+    remark = category_swap(remark, 'Hopi', 'Native American')
+    remark = category_swap(remark, 'Urban', 'Urban')
+    remark = category_swap(remark, 'easy', 'Easy Listening')
+    remark = category_swap(remark, 'PR', 'Public Radio')
+    remark = category_swap(remark, 'classi', 'News')
+    remark = category_swap(remark, 'Wind', 'Native American')
+    remark = category_swap(remark, 'Freefo', 'Freeform')
+    remark = category_swap(remark, 'Univ', 'University Radio')
     #if not remark:
       #continue
     #elif 'Spanis' in remark:
@@ -164,6 +175,11 @@ def massage(data):
       lat, lon = None, None
     antenna_record.append(lat)
     antenna_record.append(lon)
+
+    # Get the call sign before any dashes.
+    call_sign = antenna_record[5]
+    call_sign = call_sign.split('-')[0]
+    antenna_record.insert(-2, call_sign)
 
   return
 

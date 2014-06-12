@@ -24,6 +24,7 @@ def insert_into_msqyl(data, reset=True):
       cursor.execute("DROP TABLE IF EXISTS contours;")
       cursor.execute("CREATE TABLE contours (id INT PRIMARY KEY AUTO_INCREMENT, \
         callsign CHAR(50), \
+        scs CHAR(50), \
         antlat FLOAT, \
         antlon FLOAT, \
         minlat FLOAT, \
@@ -34,11 +35,12 @@ def insert_into_msqyl(data, reset=True):
         max_r FLOAT, \
         lats TEXT, \
         lons TEXT)")
-    base_query = """INSERT INTO contours (callsign, antlat, antlon, minlat, maxlat, minlon, maxlon, size, max_r, lats, lons) VALUES 
-    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
+    base_query = """INSERT INTO contours (callsign, scs, antlat, antlon, minlat, maxlat, minlon, maxlon, size, max_r, lats, lons) VALUES 
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) """
     print "Entering execute for loop"
     for i, datum in enumerate(data):
-      print i, 'of', len(data), 'with contour length', len(data[i][-1])
+      if i%100 == 0:
+        print i, 'of', len(data), 'with contour length', len(data[i][-1])
       cursor.execute(base_query, datum)
     #cursor.executemany(base_query, data)
     #connection.commit()
@@ -67,6 +69,7 @@ if __name__ == '__main__':
   #connection, cursor = get_database_conn()
   # Start a loop over lines in the file.
   # Each line is a radio station (or antenna?)
+  print "Working on parsing contour lines"
   for line in contours_file:
     contour_data = []
     # Get some of the identifiers.
@@ -74,6 +77,8 @@ if __name__ == '__main__':
     uniq_id = fields.pop(0).strip()
     band = fields.pop(0).strip()
     call_sign = fields.pop(0).strip()
+    call_sign = call_sign.split(' ')[0]
+    scs = call_sign.split('-')[0] # Short call sign.
     antenna_latlon = fields.pop(0).strip()
     antenna_latlon = np.fromstring(antenna_latlon, sep=',')
     # Remove ^\n at the end
@@ -94,6 +99,7 @@ if __name__ == '__main__':
     min_lat, max_lat, min_lon, max_lon, contour_size, max_r = \
         calc_contour_topology(antenna_latlon, arr_lats, arr_lons)
     contour_data.append(call_sign)
+    contour_data.append(scs)
     contour_data.append(antenna_latlon[0])
     contour_data.append(antenna_latlon[1])
     contour_data.append(min_lat)
@@ -108,6 +114,7 @@ if __name__ == '__main__':
     i += 1
     #if i > 1000:
       #break
+  print 'Inserting into mysql'
   insert_into_msqyl(data_holder)
 
     
